@@ -1,26 +1,46 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
+import logo from './logo.svg'
+import './App.css'
 
 const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	interface Meme {
+		url?: string
+		title?: string
+	}
+
+	const [meme, setMeme] = useState<Meme>({})
+	const [loading, setLoading] = useState<null | false | true>(null)
+
+	const getMeme = async () => {
+		const data = await (
+			await fetch('https://meme-api.herokuapp.com/gimme')
+		).json()
+		setLoading(false)
+		setMeme(data)
+	}
+
+	return (
+		<div className='App'>
+			<button
+				onClick={() => {
+					setLoading(true)
+					getMeme()
+				}}>
+				Get Meme
+			</button>
+			<div>
+				{loading ? 'Loading...' : ''}
+				{meme ? (
+					<>
+						<img src={meme.url} alt={meme.title} />
+						<h3>{meme.title}</h3>
+					</>
+				) : (
+					''
+				)}
+			</div>
+		</div>
+	)
 }
 
-export default App;
+export default App
